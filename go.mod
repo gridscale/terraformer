@@ -106,6 +106,7 @@ require (
 	github.com/google/go-github/v35 v35.1.0
 	github.com/gophercloud/gophercloud v0.17.0
 	github.com/grafana/grafana-api-golang-client v0.0.0-20210218192924-9ccd2365d2a6
+	github.com/gridscale/gsclient-go/v3 v3.6.3
 	github.com/hashicorp/go-azure-helpers v0.10.0
 	github.com/hashicorp/go-cleanhttp v0.5.1
 	github.com/hashicorp/go-hclog v0.15.0

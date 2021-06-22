@@ -48,6 +48,7 @@ func providerImporterSubcommands() []func(options ImportOptions) *cobra.Command 
 		newCmdDigitalOceanImporter,
 		newCmdEquinixMetalImporter,
 		newCmdHerokuImporter,
+		newCmdGridscaleImporter,
 		newCmdLinodeImporter,
 		newCmdOpenStackImporter,
 		newCmdTencentCloudImporter,
