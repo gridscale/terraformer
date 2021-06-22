@@ -1,4 +1,4 @@
-// Copyright 2019 The Terraformer Authors.
+// Copyright 2021 The Terraformer Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@ package gridscale
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/GoogleCloudPlatform/terraformer/terraformutils"
 	"github.com/gridscale/gsclient-go/v3"
@@ -27,10 +28,10 @@ type ServerGenerator struct {
 
 func (g ServerGenerator) createResources(serverList []gsclient.Server) []terraformutils.Resource {
 	var resources []terraformutils.Resource
-	for _, server := range serverList {
+	for idx, server := range serverList {
 		resources = append(resources, terraformutils.NewSimpleResource(
 			server.Properties.ObjectUUID,
-			server.Properties.Name,
+			fmt.Sprintf("%s-%d", server.Properties.Name, idx),
 			"gridscale_server",
 			"gridscale",
 			[]string{}))
