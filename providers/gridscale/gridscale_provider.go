@@ -59,6 +59,7 @@ func (p *GridscaleProvider) GetSupportedService() map[string]terraformutils.Serv
 		"ipv4":    &IPv4Generator{},
 		"ipv6":    &IPv6Generator{},
 		"storage": &StorageGenerator{},
+		"network": &NetworkGenerator{},
 	}
 }
 
