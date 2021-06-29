@@ -55,11 +55,12 @@ func (GridscaleProvider) GetResourceConnections() map[string]map[string][]string
 
 func (p *GridscaleProvider) GetSupportedService() map[string]terraformutils.ServiceGenerator {
 	return map[string]terraformutils.ServiceGenerator{
-		"server":  &ServerGenerator{},
-		"ipv4":    &IPv4Generator{},
-		"ipv6":    &IPv6Generator{},
-		"storage": &StorageGenerator{},
-		"network": &NetworkGenerator{},
+		"server":   &ServerGenerator{},
+		"ipv4":     &IPv4Generator{},
+		"ipv6":     &IPv6Generator{},
+		"storage":  &StorageGenerator{},
+		"network":  &NetworkGenerator{},
+		"firewall": &FirewallGenerator{},
 	}
 }
 
