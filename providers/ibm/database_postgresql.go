@@ -33,7 +33,7 @@ type DatabasePostgresqlGenerator struct {
 func (g DatabasePostgresqlGenerator) loadPostgresqlDB(dbID string, dbName string) terraformutils.Resource {
 	resources := terraformutils.NewSimpleResource(
 		dbID,
-		dbName,
+		normalizeResourceName(dbName, false),
 		"ibm_database",
 		"ibm",
 		[]string{})
@@ -42,7 +42,7 @@ func (g DatabasePostgresqlGenerator) loadPostgresqlDB(dbID string, dbName string
 
 // InitResources ...
 func (g *DatabasePostgresqlGenerator) InitResources() error {
-	region := os.Getenv("IC_REGION")
+	region := g.Args["region"].(string)
 	bmxConfig := &bluemix.Config{
 		BluemixAPIKey: os.Getenv("IC_API_KEY"),
 		Region:        region,

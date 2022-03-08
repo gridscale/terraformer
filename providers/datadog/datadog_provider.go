@@ -163,9 +163,9 @@ func (p *DatadogProvider) GetName() string {
 // GetConfig return map of provider config for Datadog
 func (p *DatadogProvider) GetConfig() cty.Value {
 	return cty.ObjectVal(map[string]cty.Value{
-		"api_key": cty.StringVal(p.apiKey),
-		"app_key": cty.StringVal(p.appKey),
-		"api_url": cty.StringVal(p.apiURL),
+		"api_key":  cty.StringVal(p.apiKey),
+		"app_key":  cty.StringVal(p.appKey),
+		"api_url":  cty.StringVal(p.apiURL),
 		"validate": cty.BoolVal(p.validate),
 	})
 }
@@ -217,14 +217,12 @@ func (p *DatadogProvider) GetSupportedService() map[string]terraformutils.Servic
 		"integration_slack_channel":            &IntegrationSlackChannelGenerator{},
 		"metric_metadata":                      &MetricMetadataGenerator{},
 		"monitor":                              &MonitorGenerator{},
-		"screenboard":                          &ScreenboardGenerator{},
 		"security_monitoring_default_rule":     &SecurityMonitoringDefaultRuleGenerator{},
 		"security_monitoring_rule":             &SecurityMonitoringRuleGenerator{},
 		"service_level_objective":              &ServiceLevelObjectiveGenerator{},
 		"synthetics_test":                      &SyntheticsTestGenerator{},
 		"synthetics_global_variable":           &SyntheticsGlobalVariableGenerator{},
 		"synthetics_private_location":          &SyntheticsPrivateLocationGenerator{},
-		"timeboard":                            &TimeboardGenerator{},
 		"user":                                 &UserGenerator{},
 		"role":                                 &RoleGenerator{},
 	}

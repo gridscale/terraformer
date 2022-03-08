@@ -21,10 +21,11 @@ import (
 	"strings"
 
 	"github.com/Azure/go-autorest/autorest"
-	"github.com/GoogleCloudPlatform/terraformer/terraformutils"
-	"github.com/GoogleCloudPlatform/terraformer/terraformutils/providerwrapper"
 	"github.com/hashicorp/go-azure-helpers/authentication"
 	"github.com/hashicorp/go-azure-helpers/sender"
+
+	"github.com/GoogleCloudPlatform/terraformer/terraformutils"
+	"github.com/GoogleCloudPlatform/terraformer/terraformutils/providerwrapper"
 )
 
 type AzureProvider struct { //nolint
@@ -148,14 +149,54 @@ func (AzureProvider) GetResourceConnections() map[string]map[string][]string {
 		"app_service": {
 			"resource_group": []string{"resource_group_name", "name"},
 		},
-		"cosmosdb": {
+		"application_gateway": {
 			"resource_group": []string{"resource_group_name", "name"},
+		},
+		"cosmosdb": {
+			"resource_group": []string{
+				"resource_group_name", "name",
+				"location", "location",
+			},
 		},
 		"container": {
-			"resource_group": []string{"resource_group_name", "name"},
+			"resource_group": []string{
+				"resource_group_name", "name",
+				"location", "location",
+			},
 		},
 		"database": {
-			"resource_group": []string{"resource_group_name", "name"},
+			"resource_group": []string{
+				"resource_group_name", "name",
+				"location", "location",
+			},
+		},
+		"databricks": {
+			"resource_group": []string{
+				"resource_group_name", "name",
+				"managed_resource_group_name", "name",
+				"location", "location",
+			},
+			"storage_account": []string{"storage_account_name", "name"},
+			"subnet": []string{
+				"public_subnet_name", "name",
+				"private_subnet_name", "name",
+			},
+			"virtual_network": []string{"virtual_network_id", "id"},
+		},
+		"data_factory": {
+			"resource_group": []string{
+				"resource_group_name", "name",
+				"location", "location",
+			},
+			"data_factory": []string{
+				"data_factory_name", "name",
+				"data_factory_id", "id",
+				"linked_service_name", "name",
+				"integration_runtime_name", "name",
+			},
+			"databricks":      []string{"existing_cluster_id", "id"},
+			"keyvault":        []string{"keyvault_id", "id"},
+			"storage_account": []string{"storage_account_id", "id"},
 		},
 		"disk": {
 			"resource_group": []string{"resource_group_name", "name"},
@@ -163,32 +204,93 @@ func (AzureProvider) GetResourceConnections() map[string]map[string][]string {
 		"dns": {
 			"resource_group": []string{"resource_group_name", "name"},
 		},
-		"keyvault": {
+		"eventhub": {
 			"resource_group": []string{"resource_group_name", "name"},
+			"eventhub": []string{
+				"eventhub_name", "name",
+				"namespace_name", "name",
+			},
+		},
+		"keyvault": {
+			"resource_group": []string{
+				"resource_group_name", "name",
+				"location", "location",
+			},
 		},
 		"load_balancer": {
 			"resource_group": []string{"resource_group_name", "name"},
 		},
 		"network_interface": {
-			"resource_group": []string{"resource_group_name", "name"},
+			"resource_group": []string{
+				"resource_group_name", "name",
+				"location", "location",
+			},
+			"subnet": []string{"subnet_id", "id"},
 		},
 		"network_security_group": {
-			"resource_group": []string{"resource_group_name", "name"},
+			"resource_group": []string{
+				"resource_group_name", "name",
+				"location", "location",
+			},
+			"network_security_group": []string{"network_security_group_name", "name"},
+		},
+		"network_watcher": {
+			"resource_group": []string{
+				"resource_group_name", "name",
+				"location", "location",
+			},
+			"network_watcher": []string{"network_watcher_name", "name"},
+			"storage_account": []string{"storage_account_id", "id"},
 		},
 		"private_dns": {
-			"resource_group": []string{"resource_group_name", "name"},
+			"resource_group":  []string{"resource_group_name", "name"},
+			"virtual_network": []string{"virtual_network_id", "id"},
+			"private_dns": []string{
+				"zone_name", "name",
+				"private_dns_zone_name", "name",
+			},
+		},
+		"private_endpoint": {
+			"resource_group": []string{
+				"resource_group_name", "name",
+				"location", "location",
+			},
+			"subnet": []string{"subnet_id", "id"},
 		},
 		"public_ip": {
+			"resource_group": []string{
+				"resource_group_name", "name",
+				"location", "location",
+			},
+		},
+		"purview": {
 			"resource_group": []string{"resource_group_name", "name"},
 		},
 		"redis": {
 			"resource_group": []string{"resource_group_name", "name"},
 		},
+		"route_table": {
+			"resource_group": []string{
+				"resource_group_name", "name",
+				"location", "location",
+			},
+			"route_table": []string{"route_table_name", "name"},
+		},
 		"scaleset": {
 			"resource_group": []string{"resource_group_name", "name"},
 		},
+		"ssh_public_key": {
+			"resource_group": []string{
+				"resource_group_name", "name",
+				"location", "location",
+			},
+		},
 		"storage_account": {
-			"resource_group": []string{"resource_group_name", "name"},
+			"resource_group": []string{
+				"resource_group_name", "name",
+				"location", "location",
+			},
+			"virtual_network": []string{"virtual_network_subnet_ids", "id"},
 		},
 		"storage_blob": {
 			"storage_account":   []string{"storage_account_name", "name"},
@@ -197,8 +299,26 @@ func (AzureProvider) GetResourceConnections() map[string]map[string][]string {
 		"storage_container": {
 			"storage_account": []string{"storage_account_name", "name"},
 		},
+		"synapse": {
+			"resource_group": []string{
+				"resource_group_name", "name",
+				"managed_resource_group_name", "name",
+			},
+			"synapse": []string{"synapse_workspace_id", "id"},
+		},
+		"subnet": {
+			"resource_group":         []string{"resource_group_name", "name"},
+			"virtual_network":        []string{"virtual_network_name", "name"},
+			"network_security_group": []string{"network_security_group_id", "id"},
+			"route_table":            []string{"route_table_id", "id"},
+			"subnet":                 []string{"subnet_id", "id"},
+		},
 		"virtual_machine": {
-			"resource_group": []string{"resource_group_name", "name"},
+			"resource_group": []string{
+				"resource_group_name", "name",
+				"location", "location",
+			},
+			"network_interface": []string{"network_interface_ids", "id"},
 		},
 		"virtual_network": {
 			"resource_group": []string{"resource_group_name", "name"},
@@ -210,25 +330,37 @@ func (p *AzureProvider) GetSupportedService() map[string]terraformutils.ServiceG
 	return map[string]terraformutils.ServiceGenerator{
 		"analysis":                             &AnalysisGenerator{},
 		"app_service":                          &AppServiceGenerator{},
+		"application_gateway":                  &ApplicationGatewayGenerator{},
 		"cosmosdb":                             &CosmosDBGenerator{},
 		"container":                            &ContainerGenerator{},
 		"database":                             &DatabasesGenerator{},
+		"databricks":                           &DatabricksGenerator{},
+		"data_factory":                         &DataFactoryGenerator{},
 		"disk":                                 &DiskGenerator{},
 		"dns":                                  &DNSGenerator{},
+		"eventhub":                             &EventHubGenerator{},
 		"keyvault":                             &KeyVaultGenerator{},
 		"load_balancer":                        &LoadBalancerGenerator{},
+		"management_lock":                      &ManagementLockGenerator{},
 		"network_interface":                    &NetworkInterfaceGenerator{},
 		"network_security_group":               &NetworkSecurityGroupGenerator{},
+		"network_watcher":                      &NetworkWatcherGenerator{},
 		"private_dns":                          &PrivateDNSGenerator{},
+		"private_endpoint":                     &PrivateEndpointGenerator{},
 		"public_ip":                            &PublicIPGenerator{},
+		"purview":                              &PurviewGenerator{},
 		"redis":                                &RedisGenerator{},
 		"resource_group":                       &ResourceGroupGenerator{},
+		"route_table":                          &RouteTableGenerator{},
 		"scaleset":                             &ScaleSetGenerator{},
 		"security_center_contact":              &SecurityCenterContactGenerator{},
 		"security_center_subscription_pricing": &SecurityCenterSubscriptionPricingGenerator{},
+		"ssh_public_key":                       &SSHPublicKeyGenerator{},
 		"storage_account":                      &StorageAccountGenerator{},
 		"storage_blob":                         &StorageBlobGenerator{},
 		"storage_container":                    &StorageContainerGenerator{},
+		"synapse":                              &SynapseGenerator{},
+		"subnet":                               &SubnetGenerator{},
 		"virtual_machine":                      &VirtualMachineGenerator{},
 		"virtual_network":                      &VirtualNetworkGenerator{},
 	}

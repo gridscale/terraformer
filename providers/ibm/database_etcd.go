@@ -33,7 +33,7 @@ type DatabaseETCDGenerator struct {
 func (g DatabaseETCDGenerator) loadETCDDB(dbID string, dbName string) terraformutils.Resource {
 	resources := terraformutils.NewSimpleResource(
 		dbID,
-		dbName,
+		normalizeResourceName(dbName, false),
 		"ibm_database",
 		"ibm",
 		[]string{})
@@ -43,7 +43,7 @@ func (g DatabaseETCDGenerator) loadETCDDB(dbID string, dbName string) terraformu
 // InitResources ...
 func (g *DatabaseETCDGenerator) InitResources() error {
 
-	region := os.Getenv("IC_REGION")
+	region := g.Args["region"].(string)
 	bmxConfig := &bluemix.Config{
 		BluemixAPIKey: os.Getenv("IC_API_KEY"),
 		Region:        region,

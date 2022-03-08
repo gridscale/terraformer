@@ -49,6 +49,7 @@ func providerImporterSubcommands() []func(options ImportOptions) *cobra.Command 
 		newCmdEquinixMetalImporter,
 		newCmdHerokuImporter,
 		newCmdGridscaleImporter,
+		newCmdLaunchDarklyImporter,
 		newCmdLinodeImporter,
 		newCmdOpenStackImporter,
 		newCmdTencentCloudImporter,
@@ -64,12 +65,16 @@ func providerImporterSubcommands() []func(options ImportOptions) *cobra.Command 
 		newCmdNs1Importer,
 		newCmdPanosImporter,
 		// VCS
+		newCmdAzureDevOpsImporter,
 		newCmdGithubImporter,
+		newCmdGitLabImporter,
 		// Monitoring & System Management
 		newCmdDatadogImporter,
 		newCmdNewRelicImporter,
+		newCmdMackerelImporter,
 		newCmdGrafanaImporter,
 		newCmdPagerDutyImporter,
+		newCmdOpsgenieImporter,
 		// Community
 		newCmdKeycloakImporter,
 		newCmdLogzioImporter,
@@ -77,6 +82,9 @@ func providerImporterSubcommands() []func(options ImportOptions) *cobra.Command 
 		newCmdMikrotikImporter,
 		newCmdXenorchestraImporter,
 		newCmdGmailfilterImporter,
+		newCmdVaultImporter,
+		newCmdOktaImporter,
+		newCmdAuth0Importer,
 	}
 }
 
@@ -94,6 +102,7 @@ func providerGenerators() map[string]func() terraformutils.ProviderGenerator {
 		newEquinixMetalProvider,
 		newFastlyProvider,
 		newHerokuProvider,
+		newLaunchDarklyProvider,
 		newLinodeProvider,
 		newNs1Provider,
 		newOpenStackProvider,
@@ -106,7 +115,9 @@ func providerGenerators() map[string]func() terraformutils.ProviderGenerator {
 		// Network
 		newCloudflareProvider,
 		// VCS
+		newAzureDevOpsProvider,
 		newGitHubProvider,
+		newGitLabProvider,
 		// Monitoring & System Management
 		newDataDogProvider,
 		newNewRelicProvider,
@@ -118,6 +129,9 @@ func providerGenerators() map[string]func() terraformutils.ProviderGenerator {
 		newMikrotikProvider,
 		newXenorchestraProvider,
 		newGmailfilterProvider,
+		newVaultProvider,
+		newOktaProvider,
+		newAuth0Provider,
 	} {
 		list[providerGen().GetName()] = providerGen
 	}

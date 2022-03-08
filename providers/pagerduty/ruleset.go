@@ -42,6 +42,8 @@ func (g *RulesetGenerator) createRulesetResources(client *pagerduty.Client) erro
 	return nil
 }
 
+// golangci-lint says this function isn't used anywhere. Do we need it? Commenting it out to make the linter happy
+
 func (g *RulesetGenerator) createRulesetRuleResources(client *pagerduty.Client) error {
 	resp, _, err := client.Rulesets.List()
 	if err != nil {
@@ -55,12 +57,16 @@ func (g *RulesetGenerator) createRulesetRuleResources(client *pagerduty.Client) 
 		}
 
 		for _, rule := range rules.Rules {
-			g.Resources = append(g.Resources, terraformutils.NewSimpleResource(
+			g.Resources = append(g.Resources, terraformutils.NewResource(
 				rule.ID,
 				rule.ID,
 				"pagerduty_ruleset_rule",
 				g.ProviderName,
+				map[string]string{
+					"ruleset": ruleset.ID,
+				},
 				[]string{},
+				map[string]interface{}{},
 			))
 		}
 	}
@@ -76,6 +82,7 @@ func (g *RulesetGenerator) InitResources() error {
 
 	funcs := []func(*pagerduty.Client) error{
 		g.createRulesetResources,
+		g.createRulesetRuleResources,
 	}
 
 	for _, f := range funcs {

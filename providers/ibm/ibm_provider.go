@@ -16,20 +16,36 @@ package ibm
 
 import (
 	"errors"
+	"os"
 
 	"github.com/GoogleCloudPlatform/terraformer/terraformutils"
 )
+
+const DefaultRegion = "us-south"
+const NoRegion = ""
 
 type IBMProvider struct { //nolint
 	terraformutils.Provider
 	ResourceGroup string
 	Region        string
+	CIS           string
 }
 
 func (p *IBMProvider) Init(args []string) error {
 	p.ResourceGroup = args[0]
 	p.Region = args[1]
+	p.CIS = args[2]
 
+	var err error
+	if p.Region != DefaultRegion && p.Region != NoRegion {
+		err = os.Setenv("IC_REGION", p.Region)
+	} else {
+		p.Region = DefaultRegion
+		err = os.Setenv("IC_REGION", DefaultRegion)
+	}
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -40,7 +56,9 @@ func (p *IBMProvider) GetName() string {
 func (p *IBMProvider) GetProviderData(arg ...string) map[string]interface{} {
 	return map[string]interface{}{
 		"provider": map[string]interface{}{
-			"ibm": map[string]interface{}{},
+			"ibm": map[string]interface{}{
+				"region": p.Region,
+			},
 		},
 	}
 }
@@ -82,6 +100,11 @@ func (p *IBMProvider) GetSupportedService() map[string]terraformutils.ServiceGen
 		"ibm_is_instance_template":   &InstanceTemplateGenerator{},
 		"ibm_function":               &CloudFunctionGenerator{},
 		"ibm_private_dns":            &privateDNSTemplateGenerator{},
+		"ibm_certificate_manager":    &CMGenerator{},
+		"ibm_direct_link":            &DLGenerator{},
+		"ibm_transit_gateway":        &TGGenerator{},
+		"ibm_vpe_gateway":            &VPEGenerator{},
+		"ibm_satellite":              &SatelliteGenerator{},
 	}
 }
 
@@ -98,6 +121,7 @@ func (p *IBMProvider) InitService(serviceName string, verbose bool) error {
 	p.Service.SetArgs(map[string]interface{}{
 		"resource_group": p.ResourceGroup,
 		"region":         p.Region,
+		"cis":            p.CIS,
 	})
 	return nil
 }

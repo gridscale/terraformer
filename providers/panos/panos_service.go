@@ -15,18 +15,23 @@
 package panos
 
 import (
+	"errors"
+
 	"github.com/GoogleCloudPlatform/terraformer/terraformutils"
-	"github.com/PaloAltoNetworks/pango"
 )
 
 type PanosService struct { //nolint
 	terraformutils.Service
-	client *pango.Firewall
+	client interface{}
 	vsys   string
 }
 
 func (p *PanosService) Initialize() error {
-	p.vsys = p.Args["vsys"].(string)
+	if _, ok := p.Args["vsys"].(string); ok {
+		p.vsys = p.Args["vsys"].(string)
+	} else {
+		return errors.New(p.GetName() + ": " + "vsys name not parsable")
+	}
 
 	c, err := Initialize()
 	if err != nil {

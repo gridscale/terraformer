@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"log"
 	"regexp"
+	"sort"
 	"strings"
 
 	"github.com/hashicorp/hcl/hcl/ast"
@@ -32,7 +33,26 @@ import (
 
 const safeChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
 
-var unsafeChars = regexp.MustCompile(`[^0-9A-Za-z_]`)
+var unsafeChars = regexp.MustCompile(`[^0-9A-Za-z_\-]`)
+
+// make HCL output reproducible by sorting the AST nodes
+func sortHclTree(tree interface{}) {
+	switch t := tree.(type) {
+	case []*ast.ObjectItem:
+		sort.Slice(t, func(i, j int) bool {
+			var bI, bJ bytes.Buffer
+			_, _ = hclPrinter.Fprint(&bI, t[i]), hclPrinter.Fprint(&bJ, t[j])
+			return bI.String() < bJ.String()
+		})
+	case []ast.Node:
+		sort.Slice(t, func(i, j int) bool {
+			var bI, bJ bytes.Buffer
+			_, _ = hclPrinter.Fprint(&bI, t[i]), hclPrinter.Fprint(&bJ, t[j])
+			return bI.String() < bJ.String()
+		})
+	default:
+	}
+}
 
 // sanitizer fixes up an invalid HCL AST, as produced by the HCL parser for JSON
 type astSanitizer struct{}
@@ -44,6 +64,7 @@ func (v *astSanitizer) visit(n interface{}) {
 		v.visit(t.Node)
 	case *ast.ObjectList:
 		var index int
+		sortHclTree(t.Items)
 		for {
 			if index == len(t.Items) {
 				break
@@ -56,7 +77,9 @@ func (v *astSanitizer) visit(n interface{}) {
 		v.visitObjectItem(t)
 	case *ast.LiteralType:
 	case *ast.ListType:
+		sortHclTree(t.List)
 	case *ast.ObjectType:
+		sortHclTree(t.List)
 		v.visit(t.List)
 	default:
 		fmt.Printf(" unknown type: %T\n", n)
@@ -91,13 +114,17 @@ func (v *astSanitizer) visitObjectItem(o *ast.ObjectItem) {
 			t.Token.Text = strings.ReplaceAll(t.Token.Text, `\t`, "")
 			t.Token.Type = 10
 			// check if text json for Unquote and Indent
-			tmp := map[string]interface{}{}
 			jsonTest := t.Token.Text
 			lines := strings.Split(jsonTest, "\n")
 			jsonTest = strings.Join(lines[1:len(lines)-1], "\n")
 			jsonTest = strings.ReplaceAll(jsonTest, "\\\"", "\"")
 			// it's json we convert to heredoc back
+			var tmp interface{} = map[string]interface{}{}
 			err := json.Unmarshal([]byte(jsonTest), &tmp)
+			if err != nil {
+				tmp = make([]interface{}, 0)
+				err = json.Unmarshal([]byte(jsonTest), &tmp)
+			}
 			if err == nil {
 				dataJSONBytes, err := json.MarshalIndent(tmp, "", "  ")
 				if err == nil {
@@ -111,6 +138,8 @@ func (v *astSanitizer) visitObjectItem(o *ast.ObjectItem) {
 				}
 			}
 		}
+	case *ast.ListType:
+		sortHclTree(t.List)
 	default:
 	}
 

@@ -22,6 +22,15 @@ terraformer import aws --resources=cloudfront --profile=prod
 ```
 In that case terraformer will not know with which region resources are associated with and will not assume any region. That scenario is useful in case of global resources (e.g. CloudFront distributions or Route 53 records) and when region is passed implicitly through environmental variables or metadata service.
 
+Examples to import other resources-
+
+ * Security Group-
+```
+terraformer import aws --resources=sg --regions=us-east-1
+```
+
+
+
 #### Supported services
 
 *   `accessanalyzer`
@@ -55,16 +64,20 @@ In that case terraformer will not know with which region resources are associate
     * `aws_autoscaling_group`
     * `aws_launch_configuration`
     * `aws_launch_template`
+*   `batch`
+    * `aws_batch_compute_environment`
+    * `aws_batch_job_definition`
+    * `aws_batch_job_queue`
 *   `budgets`
     * `aws_budgets_budget`
 *   `cloud9`
     * `aws_cloud9_environment_ec2`
-*   `cloudfront`
-    * `aws_cloudfront_distribution`
 *   `cloudformation`
     * `aws_cloudformation_stack`
     * `aws_cloudformation_stack_set`
     * `aws_cloudformation_stack_set_instance`
+*   `cloudfront`
+    * `aws_cloudfront_distribution`
 *   `cloudhsm`
     * `aws_cloudhsm_v2_cluster`
     * `aws_cloudhsm_v2_hsm`
@@ -87,50 +100,55 @@ In that case terraformer will not know with which region resources are associate
 *   `cognito`
     * `aws_cognito_identity_pool`
     * `aws_cognito_user_pool`
-*   `customer_gateway`
-    * `aws_customer_gateway`
 *   `config`
     * `aws_config_config_rule`
     * `aws_config_configuration_recorder`
     * `aws_config_delivery_channel`
+*   `customer_gateway`
+    * `aws_customer_gateway`
 *   `datapipeline`
     * `aws_datapipeline_pipeline`
 *   `devicefarm`
     * `aws_devicefarm_project`
+*   `docdb`
+    * `aws_docdb_cluster`
+    * `aws_docdb_cluster_instance`
+    * `aws_docdb_cluster_parameter_group`
+    * `aws_docdb_subnet_group`
 *   `dynamodb`
     * `aws_dynamodb_table`
-*   `ec2_instance`
-    * `aws_instance`
-*   `eip`
-    * `aws_eip`
-*   `elasticache`
-    * `aws_elasticache_cluster`
-    * `aws_elasticache_parameter_group`
-    * `aws_elasticache_subnet_group`
-    * `aws_elasticache_replication_group`
 *   `ebs`
     * `aws_ebs_volume`
     * `aws_volume_attachment`
-*   `elastic_beanstalk`
-    * `aws_elastic_beanstalk_application`
-    * `aws_elastic_beanstalk_environment`
-*   `ecs`
-    * `aws_ecs_cluster`
-    * `aws_ecs_service`
-    * `aws_ecs_task_definition`
+*   `ec2_instance`
+    * `aws_instance`
 *   `ecr`
     * `aws_ecr_lifecycle_policy`
     * `aws_ecr_repository`
     * `aws_ecr_repository_policy`
 *   `ecrpublic`
     * `aws_ecrpublic_repository`
+*   `ecs`
+    * `aws_ecs_cluster`
+    * `aws_ecs_service`
+    * `aws_ecs_task_definition`
 *   `efs`
     * `aws_efs_access_point`
     * `aws_efs_file_system`
     * `aws_efs_file_system_policy`
     * `aws_efs_mount_target`
+*   `eip`
+    * `aws_eip`
 *   `eks`
     * `aws_eks_cluster`
+*   `elasticache`
+    * `aws_elasticache_cluster`
+    * `aws_elasticache_parameter_group`
+    * `aws_elasticache_subnet_group`
+    * `aws_elasticache_replication_group`
+*   `elastic_beanstalk`
+    * `aws_elastic_beanstalk_application`
+    * `aws_elastic_beanstalk_environment`
 *   `elb`
     * `aws_elb`
 *   `emr`
@@ -187,10 +205,10 @@ In that case terraformer will not know with which region resources are associate
     * `aws_media_store_container`
 *   `msk`
     * `aws_msk_cluster`
-*   `nat`
-    * `aws_nat_gateway`
 *   `nacl`
     * `aws_network_acl`
+*   `nat`
+    * `aws_nat_gateway`
 *   `opsworks`
     * `aws_opsworks_application`
     * `aws_opsworks_custom_layer`
@@ -211,6 +229,8 @@ In that case terraformer will not know with which region resources are associate
     * `aws_qldb_ledger`
 *   `rds`
     * `aws_db_instance`
+    * `aws_db_proxy`
+    * `aws_db_cluster`
     * `aws_db_parameter_group`
     * `aws_db_subnet_group`
     * `aws_db_option_group`
@@ -327,6 +347,16 @@ Will only import AWS EC2 instances along with EBS volumes annotated with tag `co
 terraformer import aws --resources=ec2_instance,ebs --filter=Type=ec2_instance;Name=tags.costCenter;Value=20000:'20001:1' --regions=eu-west-1
 ```
 Will work as same as example above with a change the filter will be applicable only to `ec2_instance` resources.
+
+Few more examples - How to import ec2 instance based on instance name and id
+```
+terraformer import aws --resources=ec2_instance --filter="Name=tags.Name;Value=Terraformer" --regions=us-east-1
+```
+This command imports ec2 instance having name as Terraformer.
+```
+terraformer import aws --resources=ec2_instance --filter="Name=id;Value=i-0xxxxxxxxx" --regions=us-east-1
+```
+This command imports ec2 instance having instance-id as i-0xxxxxxxxx.
 
 Due to fact API Gateway generates a lot of resources, it's possible to issue a filtering query to retrieve resources related to a given REST API by tags. To fetch resources related to a REST API resource with a tag `STAGE` and value `dev`, add parameter `--filter="Type=api_gateway_rest_api;Name=tags.STAGE;Value=dev"`.
 

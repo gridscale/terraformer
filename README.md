@@ -1,6 +1,7 @@
 # Terraformer
 
-[![Build Status](https://travis-ci.com/GoogleCloudPlatform/terraformer.svg?branch=master)](https://travis-ci.com/GoogleCloudPlatform/terraformer)
+[![tests](https://github.com/GoogleCloudPlatform/terraformer/actions/workflows/test.yml/badge.svg)](https://github.com/GoogleCloudPlatform/terraformer/actions/workflows/test.yml)
+[![linter](https://github.com/GoogleCloudPlatform/terraformer/actions/workflows/linter.yml/badge.svg)](https://github.com/GoogleCloudPlatform/terraformer/actions/workflows/linter.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/GoogleCloudPlatform/terraformer)](https://goreportcard.com/report/github.com/GoogleCloudPlatform/terraformer)
 [![AUR package](https://img.shields.io/aur/version/terraformer)](https://aur.archlinux.org/packages/terraformer/)
 [![Homebrew](https://img.shields.io/badge/dynamic/json.svg?url=https://formulae.brew.sh/api/formula/terraformer.json&query=$.versions.stable&label=homebrew)](https://formulae.brew.sh/formula/terraformer)
@@ -29,6 +30,7 @@ A CLI tool that generates `tf`/`json` and `tfstate` files based on existing infr
         * [Equinix Metal](/docs/equinixmetal.md)
         * [Fastly](/docs/fastly.md)
         * [Heroku](/docs/heroku.md)
+        * [LaunchDarkly](/docs/launchdarkly.md)
         * [Linode](/docs/linode.md)
         * [NS1](/docs/ns1.md)
         * [OpenStack](/docs/openstack.md)
@@ -43,11 +45,15 @@ A CLI tool that generates `tf`/`json` and `tfstate` files based on existing infr
         * [Cloudflare](/docs/cloudflare.md)
         * [PAN-OS](/docs/panos.md)
     * VCS
+        * [Azure DevOps](/docs/azuredevops.md)
         * [GitHub](/docs/github.md)
+        * [Gitlab](/docs/gitlab.md)
     * Monitoring & System Management
         * [Datadog](/docs/datadog.md)
         * [New Relic](/docs/relic.md)
+        * [Mackerel](/docs/mackerel.md)
         * [PagerDuty](/docs/pagerduty.md)
+        * [Opsgenie](/docs/opsgenie.md)
     * Community
         * [Keycloak](/docs/keycloak.md)
         * [Logz.io](/docs/logz.md)
@@ -56,6 +62,10 @@ A CLI tool that generates `tf`/`json` and `tfstate` files based on existing infr
         * [Xen Orchestra](/docs/xen.md)
         * [GmailFilter](/docs/gmailfilter.md)
         * [Grafana](/docs/grafana.md)
+        * [Vault](/docs/vault.md)
+    * Identity
+        * [Okta](/docs/okta.md)
+        * [Auth0](/docs/auth0.md)
 - [Contributing](#contributing)
 - [Developing](#developing)
 - [Infrastructure](#infrastructure)
@@ -195,10 +205,11 @@ It's possible to combine `--compact` `--path-pattern` parameters together.
 ### Installation
 
 From source:
-1.  Run `git clone <terraformer repo>`
+1.  Run `git clone <terraformer repo> && cd terraformer/`
 2.  Run `go mod download`
-3.  Run `go build -v` for all providers OR build with one provider `go run build/main.go {google,aws,azure,kubernetes and etc}`
-4.  Run ```terraform init``` against an ```versions.tf``` file to install the plugins required for your platform. For example, if you need plugins for the google provider, ```versions.tf``` should contain:
+3.  Run `go build -v` for all providers OR build with one provider
+`go run build/main.go {google,aws,azure,kubernetes,etc}`
+4.  Run ```terraform init``` against a ```versions.tf``` file to install the plugins required for your platform. For example, if you need plugins for the google provider, ```versions.tf``` should contain:
 
 ```
 terraform {
@@ -233,6 +244,14 @@ curl -LO https://github.com/GoogleCloudPlatform/terraformer/releases/download/$(
 chmod +x terraformer-${PROVIDER}-darwin-amd64
 sudo mv terraformer-${PROVIDER}-darwin-amd64 /usr/local/bin/terraformer
 ```
+* Windows
+1. Install Terraform - https://www.terraform.io/downloads
+2. Download exe file for required provider from here - https://github.com/GoogleCloudPlatform/terraformer/releases
+3. Add the exe file path to path variable
+4. Create a folder and initialize the terraform provider and run terraformer commands from there
+   * For AWS -  refer https://learn.hashicorp.com/tutorials/terraform/aws-build?in=terraform/aws-get-started
+
+
 
 #### Using a package manager
 
@@ -251,6 +270,7 @@ Links to download Terraform Providers:
 * Cloud
     * DigitalOcean provider >1.9.1 - [here](https://releases.hashicorp.com/terraform-provider-digitalocean/)
     * Heroku provider >2.2.1 - [here](https://releases.hashicorp.com/terraform-provider-heroku/)
+    * LaunchDarkly provider >=2.1.1 - [here](https://releases.hashicorp.com/terraform-provider-launchdarkly/)
     * Linode provider >1.8.0 - [here](https://releases.hashicorp.com/terraform-provider-linode/)
     * OpenStack provider >1.21.1 - [here](https://releases.hashicorp.com/terraform-provider-openstack/)
     * TencentCloud provider >1.50.0 - [here](https://releases.hashicorp.com/terraform-provider-tencentcloud/)
@@ -269,7 +289,9 @@ Links to download Terraform Providers:
 * Monitoring & System Management
     * Datadog provider >2.1.0 - [here](https://releases.hashicorp.com/terraform-provider-datadog/)
     * New Relic provider >2.0.0 - [here](https://releases.hashicorp.com/terraform-provider-newrelic/)
+    * Mackerel provider > 0.0.6 - [here](https://github.com/mackerelio-labs/terraform-provider-mackerel)
     * Pagerduty >=1.9 - [here](https://releases.hashicorp.com/terraform-provider-pagerduty/)
+    * Opsgenie >= 0.6.0 [here](https://releases.hashicorp.com/terraform-provider-opsgenie/)
 * Community
     * Keycloak provider >=1.19.0 - [here](https://github.com/mrparkers/terraform-provider-keycloak/)
     * Logz.io provider >=1.1.1 - [here](https://github.com/jonboydell/logzio_terraform_provider/)
@@ -277,11 +299,21 @@ Links to download Terraform Providers:
     * Mikrotik provider >= 0.2.2 - [here](https://github.com/ddelnano/terraform-provider-mikrotik)
     * Xen Orchestra provider >= 0.18.0 - [here](https://github.com/ddelnano/terraform-provider-xenorchestra)
     * GmailFilter provider >= 1.0.1 - [here](https://github.com/yamamoto-febc/terraform-provider-gmailfilter)
+    * Vault provider - [here](https://github.com/hashicorp/terraform-provider-vault)
+    * Auth0 provider - [here](https://github.com/alexkappa/terraform-provider-auth0)
 
 Information on provider plugins:
 https://www.terraform.io/docs/configuration/providers.html
 
 
+## High-Level steps to add new provider
+ * Initialize provider details in cmd/root.go and create a provider initialization file in the terraformer/cmd folder
+ * Create a folder under terraformer/providers/ for your provider
+ * Create two files under this folder
+   * <provide_name>_provider.go
+   * <provide_name>_service.go
+* Initialize all provider's supported services in <provide_name>_provider.go file
+* Create script for each supported service in same folder
 
 ## Contributing
 
